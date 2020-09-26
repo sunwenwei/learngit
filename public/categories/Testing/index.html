@@ -48,6 +48,15 @@
   
 
 
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?6cbaa2e8cde5f381abcb1a50f8cdfc86";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
 
 
 
@@ -218,15 +227,15 @@
 
       <div class="post-meta">
         <time itemprop="dateCreated"
-              datetime="2020-09-24T21:31:15+08:00"
-              content="2020-09-24">
-          09-24
+              datetime="2020-09-25T12:27:14+08:00"
+              content="2020-09-25">
+          09-25
         </time>
       </div>
 
       <div class="post-title">
-          <a class="post-title-link" href="/2020/09/24/Theme-Allocation/" itemprop="url">
-            <span itemprop="name">Theme Allocation</span>
+          <a class="post-title-link" href="/2020/09/25/tseting/" itemprop="url">
+            <span itemprop="name">The frist Blog of testing</span>
           </a>
       </div>
 
@@ -238,15 +247,15 @@
 
       <div class="post-meta">
         <time itemprop="dateCreated"
-              datetime="2020-09-24T16:25:21+08:00"
-              content="2020-09-24">
-          09-24
+              datetime="2020-09-25T12:27:14+08:00"
+              content="2020-09-25">
+          09-25
         </time>
       </div>
 
       <div class="post-title">
-          <a class="post-title-link" href="/2020/09/24/tseting/" itemprop="url">
-            <span itemprop="name">The frist Blog of testing</span>
+          <a class="post-title-link" href="/2020/09/25/Theme-Allocation/" itemprop="url">
+            <span itemprop="name">Theme Allocation</span>
           </a>
       </div>
 
@@ -475,9 +484,9 @@
 
 <script>
 NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
-  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine/dist/Valine.min.js', () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.3.9/dist/Valine.min.js', () => {
     var GUEST = ['nick', 'mail', 'link'];
-    var guest = 'nick';
+    var guest = 'nick,mail';
     guest = guest.split(',').filter(item => {
       return GUEST.includes(item);
     });
@@ -492,7 +501,7 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
       meta       : guest,
       pageSize   : '10' || 10,
       visitor    : true,
-      lang       : '' || 'zh-cn',
+      lang       : 'zh-cn' || 'zh-cn',
       path       : location.pathname,
       recordIP   : true,
       serverURLs : ''
