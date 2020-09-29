@@ -56,6 +56,21 @@
   {%- set pace_js_uri = theme.vendors.pace or next_vendors('pace/pace.min.js') %}
   <link rel="stylesheet" href="{{ pace_css_uri }}">
   <script src="{{ pace_js_uri }}"></script>
+      <script>
+    (function () {
+        if ('{{ page.password }}') {
+            if (prompt('请输入文章密码') !== '{{ page.password }}') {
+                alert('密码错误！');
+                if (history.length === 1) {
+                    location.replace("https://lucksun.work/"); // 这里替换成你的首页
+                } else {
+                    history.back();
+                }
+            }
+        }
+    })();
+</script>
+
 {%- endif %}
 
 {{ next_config() }}

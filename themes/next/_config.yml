@@ -86,7 +86,7 @@ footer:
 # CC licenses are available in 39 languages, you can find the specific and correct abbreviation you need on https://creativecommons.org
 creative_commons:
   license: by-nc-sa
-  sidebar: false
+  sidebar: true
   post: false
   language:
 
@@ -265,7 +265,7 @@ reward_settings:
 
 reward:
   # wechatpay: /images/wechatpay.png
-  alipay: /images/reward.png
+  美色当前,忠义让步: /images/reward.png
   # paypal: /images/reward.png
   # bitcoin: /images/reward.png
 
@@ -653,6 +653,27 @@ rating:
 # Go to https://www.addthis.com/dashboard to customize your tools.
 add_this_id:
 
+needmoreshare2:
+  enable: true
+  postbottom:
+    enable: true
+    options:
+      iconStyle: default
+      boxForm: horizontal
+      #位置
+      position: bottomCenter
+      #可分享网站
+      networks: Weibo,Wechat,Douban,QQZone,Twitter,Facebook
+  float:
+    enable: true
+    options:
+      iconStyle: default
+      boxForm: vertical
+      #位置
+      position:
+        topRight
+        #可分享网站
+      networks: Weibo,Wechat,Douban,QQZone,Twitter,Facebook
 # ---------------------------------------------------------------
 # Statistics and Analytics
 # See: https://theme-next.org/docs/third-party-services/statistics-and-analytics
@@ -864,6 +885,7 @@ canvas_ribbon:
 # Remember to use the https protocol of CDN files when you enable https on your site.
 vendors:
   # Internal path prefix.
+  # canvas_ribbon: //cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-ribbon@1/canvas-ribbon.js
   _internal: lib
 
   # Internal version: 3.1.0
@@ -971,10 +993,6 @@ vendors:
   three_waves:
   canvas_lines:
   canvas_sphere:
-
-  # Internal version: 1.0.0
-  # canvas_ribbon: //cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-ribbon@1/canvas-ribbon.js
-  canvas_ribbon:
 
 # Assets
 css: css

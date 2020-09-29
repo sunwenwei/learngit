@@ -34,15 +34,17 @@
               {{ _p('counter.tag_cloud', site.tags.length) }}
             </div>
             <div class="tag-cloud-tags">
-              {{ tagcloud({
+              <!--{{ tagcloud({
                 min_font   : theme.tagcloud.min,
                 max_font   : theme.tagcloud.max,
                 amount     : theme.tagcloud.amount,
                 color      : true,
                 start_color: theme.tagcloud.start,
                 end_color  : theme.tagcloud.end})
-              }}
+              }}-->
+               {{ tagcloud({min_font: 16, max_font: 16, amount: 300, color: true, start_color: '#FFF', end_color: '#FFF'}) }}       
             </div>
+            {% include 'tag-color.swig' %}	
           </div>
         {% elif page.type === 'categories' %}
           <div class="category-all-page">
