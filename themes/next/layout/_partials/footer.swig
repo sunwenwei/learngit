@@ -20,7 +20,7 @@
   <span class="author" itemprop="copyrightHolder">{{ theme.footer.copyright or author }}</span>
 
   {%- if config.symbols_count_time.total_symbols %}
-    <span class="post-meta-divider">|</span>
+    <span class="post-meta-divider"><br/></span>
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
