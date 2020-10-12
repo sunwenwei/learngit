@@ -1,280 +1,316 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Theme Allocation</title>
-    <url>/posts/54882/</url>
-    <content><![CDATA[<p><img data-src="https://img-blog.csdnimg.cn/20200922140624705.png#pic_center" alt="效果图"></p>
+    <title>【Angular2】--兄弟组件传值</title>
+    <url>/posts/162fe8c8/</url>
+    <content><![CDATA[<h1 id="兄弟组件"><a href="#兄弟组件" class="headerlink" title="兄弟组件"></a>兄弟组件</h1><ul>
+<li>兄弟组件一般使用中间人的方式实现交互，中间人也有不同的选择，可以使用第三者或者父组件也可以使用父服务，相对于第三者组件，父组件和服务的优点就体现出来了——<strong>稳定</strong> ， 父子组件一般是有耦合的，所以在确保模块的独立性时会选择父服务作为中间人。</li>
+</ul>
+<hr>
+<a id="more"></a>
+
+
+<blockquote>
+<p>本篇文章参照<a href="https://blog.csdn.net/hl971115/article/details/102259417">angular8兄弟之间传值</a></p>
+</blockquote>
+<hr>
+<h1 id="创建兄弟组件"><a href="#创建兄弟组件" class="headerlink" title="创建兄弟组件"></a>创建兄弟组件</h1><p><img data-src="https://img-blog.csdnimg.cn/20200930135605728.png#pic_center" alt="在这里插入图片描述"><br>相对于parent模块来说，tom 和 jack 是兄弟组件。parent.service就是选用的中间人。</p>
+<hr>
+<h1 id="tom-component-html"><a href="#tom-component-html" class="headerlink" title="tom.component.html"></a>tom.component.html</h1><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;margin: 0; padding: 0;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">&quot;width: 49%;height: 200px;text-align: center; border:1px solid red; margin-right: 5px;float:left ;padding: 5px;&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> [(<span class="attr">ngModel</span>)]=<span class="string">&quot;tom&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;sendToJack()&quot;</span>&gt;</span>tell parent<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">&quot;width: 49%;height: 200px;text-align: center;  border:1px solid blue;margin-left: 5px; float:right;padding: 5px;&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">app-jack</span>&gt;</span><span class="tag">&lt;/<span class="name">app-jack</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;clear: both;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>在tom组件内将jack组件引入，并调整样式。tom中有一个输入框，在tom中输入值后，点击按钮可将值传递到jack组件之中并显示。</p>
+<p><img data-src="https://img-blog.csdnimg.cn/20200930140102294.png#pic_center" alt="在这里插入图片描述"></p>
+<h1 id="tom-component-ts"><a href="#tom-component-ts" class="headerlink" title="tom.component.ts"></a>tom.component.ts</h1><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">TomComponent</span>  </span>&#123;</span><br><span class="line">	<span class="comment">// 注入服务</span></span><br><span class="line">  <span class="keyword">constructor</span>(private service: ParentService) &#123;&#125;</span><br><span class="line">  <span class="comment">// 输入框绑定值</span></span><br><span class="line">  tom = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">  <span class="comment">// 发送值给jack组件</span></span><br><span class="line">  sendToJack() &#123;</span><br><span class="line">    <span class="built_in">this</span>.service.emit(<span class="built_in">this</span>.tom);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="parent-service-ts"><a href="#parent-service-ts" class="headerlink" title="parent.service.ts"></a>parent.service.ts</h1><blockquote>
+<p>Subject是Observable的子类。- Subject是多播的，允许将值多播给多个观察者。普通的 Observable 是单播的。<br>在 Subject 的内部，subscribe 不会调用发送值的新执行。它只是将给定的观察者注册到观察者列表中，类似于其他库或语言中的 addListener 的工作方式。<br>要给 Subject 提供新值，只要调用 next(theValue)，它会将值多播给已注册监听该 Subject 的观察者们。</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ParentService</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 创建Subject事件</span></span><br><span class="line">  private subject = <span class="keyword">new</span> Subject();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 创建消费者监听</span></span><br><span class="line">  listen = <span class="built_in">this</span>.subject.asObservable();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 发送数据</span></span><br><span class="line">  emit(value: any) &#123;</span><br><span class="line">    <span class="built_in">this</span>.subject.next(value);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>在服务内，创建一个subject主题，并创建Observable监听者，在有监听者调用emit()方法时，就会将值发给监听者</p>
+<hr>
+<h1 id="jack-component-ts"><a href="#jack-component-ts" class="headerlink" title="jack.component.ts"></a>jack.component.ts</h1><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">JackComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">	<span class="comment">// 注入服务</span></span><br><span class="line">  <span class="keyword">constructor</span>(private service: ParentService) &#123;&#125;</span><br><span class="line">  <span class="comment">// 兄弟组件传的值</span></span><br><span class="line">  value = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">  ngOnInit(): <span class="keyword">void</span> &#123;</span><br><span class="line">  <span class="comment">// 调用服务中的监听，若观察的数据有变化则会传给观察者们</span></span><br><span class="line">    <span class="built_in">this</span>.service.listen.subscribe(<span class="function">(<span class="params">value: any</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">this</span>.value = value;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<hr style=" border:solid; width:100px; height:1px;" color=#000000 size=1">
+
+<h1 id="效果图"><a href="#效果图" class="headerlink" title="效果图"></a>效果图</h1><p><img data-src="https://img-blog.csdnimg.cn/20200930141258477.png#pic_center" alt="在这里插入图片描述"></p>
+<hr>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p><a href="https://blog.csdn.net/qq_34414916/article/details/85201246">数星星等天明</a></p>
+<blockquote>
+<p>我们使用Observable创建的可观察对象只能用于单播，也就是每次订阅就代表着不同的一次订阅者函数的执行，不同的观察者之间互不干扰，（不理解的话请继续阅读，后面会有具体的例子）</p>
+</blockquote>
+<blockquote>
+<p>而我们使用Subject创建的可观察对象是可以用于多播的，也就是多个观察者共享一个订阅者函数，生产者每次发送的值，都会发送给多播中的每一个观察者！</p>
+</blockquote>
+<blockquote>
+<p>Subject既可以作为可观察对象使用、又可以作为观察者使用！</p>
+</blockquote>
+<blockquote>
+<p>当Subject作为可观察对象使用的时候，其subscribe函数的作用变成了注册observer，而其next方法的作用变成了发送值</p>
+</blockquote>
 ]]></content>
       <categories>
-        <category>Testing</category>
+        <category>Angular2</category>
       </categories>
       <tags>
-        <tag>-testing</tag>
+        <tag>Angular2</tag>
       </tags>
   </entry>
   <entry>
-    <title>Hello World</title>
-    <url>/posts/16107/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-1"><a href="#Quick-Start-1" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-1"><a href="#Create-a-new-post-1" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-1"><a href="#Run-server-1" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-1"><a href="#Generate-static-files-1" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-1"><a href="#Deploy-to-remote-sites-1" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-2"><a href="#Quick-Start-2" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-2"><a href="#Create-a-new-post-2" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-2"><a href="#Run-server-2" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-2"><a href="#Generate-static-files-2" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-2"><a href="#Deploy-to-remote-sites-2" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-3"><a href="#Quick-Start-3" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-3"><a href="#Create-a-new-post-3" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-3"><a href="#Run-server-3" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-3"><a href="#Generate-static-files-3" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-3"><a href="#Deploy-to-remote-sites-3" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-4"><a href="#Quick-Start-4" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-4"><a href="#Create-a-new-post-4" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-4"><a href="#Run-server-4" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-4"><a href="#Generate-static-files-4" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-4"><a href="#Deploy-to-remote-sites-4" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-5"><a href="#Quick-Start-5" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-5"><a href="#Create-a-new-post-5" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-5"><a href="#Run-server-5" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-5"><a href="#Generate-static-files-5" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-5"><a href="#Deploy-to-remote-sites-5" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-6"><a href="#Quick-Start-6" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-6"><a href="#Create-a-new-post-6" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-6"><a href="#Run-server-6" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-6"><a href="#Generate-static-files-6" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-6"><a href="#Deploy-to-remote-sites-6" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-7"><a href="#Quick-Start-7" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-7"><a href="#Create-a-new-post-7" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-7"><a href="#Run-server-7" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-7"><a href="#Generate-static-files-7" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-7"><a href="#Deploy-to-remote-sites-7" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-8"><a href="#Quick-Start-8" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-8"><a href="#Create-a-new-post-8" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-8"><a href="#Run-server-8" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-8"><a href="#Generate-static-files-8" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-8"><a href="#Deploy-to-remote-sites-8" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-9"><a href="#Quick-Start-9" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-9"><a href="#Create-a-new-post-9" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-9"><a href="#Run-server-9" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-9"><a href="#Generate-static-files-9" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-9"><a href="#Deploy-to-remote-sites-9" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-10"><a href="#Quick-Start-10" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-10"><a href="#Create-a-new-post-10" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-10"><a href="#Run-server-10" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-10"><a href="#Generate-static-files-10" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-10"><a href="#Deploy-to-remote-sites-10" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-11"><a href="#Quick-Start-11" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-11"><a href="#Create-a-new-post-11" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-11"><a href="#Run-server-11" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-11"><a href="#Generate-static-files-11" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-11"><a href="#Deploy-to-remote-sites-11" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-12"><a href="#Quick-Start-12" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-12"><a href="#Create-a-new-post-12" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-12"><a href="#Run-server-12" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-12"><a href="#Generate-static-files-12" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-12"><a href="#Deploy-to-remote-sites-12" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-13"><a href="#Quick-Start-13" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-13"><a href="#Create-a-new-post-13" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-13"><a href="#Run-server-13" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-13"><a href="#Generate-static-files-13" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-13"><a href="#Deploy-to-remote-sites-13" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-14"><a href="#Quick-Start-14" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-14"><a href="#Create-a-new-post-14" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-14"><a href="#Run-server-14" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-14"><a href="#Generate-static-files-14" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-14"><a href="#Deploy-to-remote-sites-14" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-15"><a href="#Quick-Start-15" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-15"><a href="#Create-a-new-post-15" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-15"><a href="#Run-server-15" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-15"><a href="#Generate-static-files-15" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-15"><a href="#Deploy-to-remote-sites-15" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-16"><a href="#Quick-Start-16" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-16"><a href="#Create-a-new-post-16" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-16"><a href="#Run-server-16" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-16"><a href="#Generate-static-files-16" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-16"><a href="#Deploy-to-remote-sites-16" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-17"><a href="#Quick-Start-17" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-17"><a href="#Create-a-new-post-17" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-17"><a href="#Run-server-17" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-17"><a href="#Generate-static-files-17" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-17"><a href="#Deploy-to-remote-sites-17" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-18"><a href="#Quick-Start-18" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-18"><a href="#Create-a-new-post-18" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-18"><a href="#Run-server-18" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-18"><a href="#Generate-static-files-18" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-18"><a href="#Deploy-to-remote-sites-18" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-19"><a href="#Quick-Start-19" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-19"><a href="#Create-a-new-post-19" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-19"><a href="#Run-server-19" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-19"><a href="#Generate-static-files-19" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-19"><a href="#Deploy-to-remote-sites-19" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-<h2 id="Quick-Start-20"><a href="#Quick-Start-20" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post-20"><a href="#Create-a-new-post-20" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server-20"><a href="#Run-server-20" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files-20"><a href="#Generate-static-files-20" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites-20"><a href="#Deploy-to-remote-sites-20" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+    <title>【Angular2】--父子组件传值</title>
+    <url>/posts/ab3048f6/</url>
+    <content><![CDATA[<h1 id="父子组件之间传值"><a href="#父子组件之间传值" class="headerlink" title="父子组件之间传值"></a>父子组件之间传值</h1><h2 id="装饰器-Input与-Output"><a href="#装饰器-Input与-Output" class="headerlink" title="装饰器@Input与@Output"></a>装饰器@Input与@Output</h2><p>父组件引用子组件，两个组件内部都是一个输入框</p>
+<p><strong>parent.component.html</strong></p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;border: darkred 1px solid; width: 50%;height: 50px; text-align: center;padding-top: 10px;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span>&gt;</span>parent：<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">nz-input</span> #<span class="attr">parentInput</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot; text-align: center; &quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">app-app-child</span> [<span class="attr">parentInput</span>]=<span class="string">&quot;parentInput.value&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">app-app-child</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+<p><strong>child.component.html</strong></p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot; background-color: aqua; width: 50%;height: 50px; padding-top: 10px;&quot;</span>&gt;</span></span><br><span class="line">  child：</span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">nz-input</span> [<span class="attr">placeholder</span>]=<span class="string">&quot;parentInput&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><strong>child.component.ts</strong></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppChildComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 输入性装饰器，用来接收父组件传来的同名参数</span></span><br><span class="line">  @Input() parentInput: string;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">constructor</span>() &#123;&#125;</span><br><span class="line"></span><br><span class="line">  ngOnInit(): <span class="keyword">void</span> &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><strong>效果图</strong><br>在父组件内的输入框键入，就会传入子组件，父组件在引入的子组件上用[paramName]=’value’传值， <strong>&lt;app-app-child [parentInput]=”parentInput.value”&gt;</app-app-child></strong>  子组件用  <strong>@Input() parentInput: string</strong> 接收，<br><img data-src="https://img-blog.csdnimg.cn/20200922140624705.png#pic_center" alt="效果图"></p>
+<hr>
+<ul>
+<li><h2 id="通过-setter-截听输入属性值的变化"><a href="#通过-setter-截听输入属性值的变化" class="headerlink" title="通过 setter 截听输入属性值的变化"></a>通过 setter 截听输入属性值的变化</h2><a href="https://angular.cn/guide/component-interaction#intercept-input-property-changes-with-a-setter">Angular官网介绍</a><br>在父组件内定义一个数组，将通过setter方式传入子组件</li>
+</ul>
+<p><strong>parent.component.html</strong></p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;border: darkred 1px solid; width: 50%;height: 50px; text-align: center;padding-top: 10px;&quot;</span>&gt;</span></span><br><span class="line"> parent：&#123;&#123;names&#125;&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot; text-align: center; &quot;</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--ts中定义names数组，循环将name传入子组件中--&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">app-app-child</span> *<span class="attr">ngFor</span>=<span class="string">&quot;let name of names&quot;</span> [<span class="attr">name</span>]=<span class="string">&quot;name&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">app-app-child</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>parent.component.ts</strong></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">names = [<span class="string">&#x27;Dr IQ&#x27;</span>, <span class="string">&#x27;   &#x27;</span>, <span class="string">&#x27;  Bombasto  &#x27;</span>];</span><br></pre></td></tr></table></figure>
+<p><strong>child.component.html</strong></p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot; background-color: aqua; width: 50%;height: 50px; padding-top: 10px;&quot;</span>&gt;</span></span><br><span class="line">  child：&#123;&#123;name&#125;&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>child.componetn.ts</strong></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppChildComponent</span> </span>&#123;</span><br><span class="line">  private _name = <span class="string">&#x27;&#x27;</span>; <span class="comment">// 定义私有变量name，用来转换传入的数据</span></span><br><span class="line"></span><br><span class="line">  @Input()</span><br><span class="line">  <span class="comment">// 当参数name被传入，就会调用set方法，来进行判断和赋值</span></span><br><span class="line">  <span class="keyword">set</span> <span class="title">name</span>(<span class="params">name: string</span>) &#123;</span><br><span class="line">    <span class="built_in">this</span>._name = (name &amp;&amp; name.trim()) || <span class="string">&#x27;&lt;no name set&gt;&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="comment">// 当有地方使用name参数，就会调用get方法进行输出</span></span><br><span class="line">  <span class="keyword">get</span> <span class="title">name</span>(): <span class="title">string</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>._name;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>效果图</strong><br>子组件通过@Input接收父组件传入的数据，并通过自身设置的set,get方法进行判断并输出</p>
+<p><img data-src="https://img-blog.csdnimg.cn/20200922152516522.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1bmdvb2RsdWNrNjY2,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<hr>
+<h2 id="通过ngOnChanges-来截听输入属性值的变化"><a href="#通过ngOnChanges-来截听输入属性值的变化" class="headerlink" title="通过ngOnChanges()来截听输入属性值的变化"></a>通过ngOnChanges()来截听输入属性值的变化</h2><ul>
+<li><strong>child</strong><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, Input, OnChanges, SimpleChange &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line">@Component(&#123;</span><br><span class="line">  selector: <span class="string">&#x27;app-version-child&#x27;</span>,</span><br><span class="line">  template: <span class="string">`</span></span><br><span class="line"><span class="string">    &lt;h3&gt;Version &#123;&#123;major&#125;&#125;.&#123;&#123;minor&#125;&#125;&lt;/h3&gt;</span></span><br><span class="line"><span class="string">    &lt;h4&gt;Change log:&lt;/h4&gt;</span></span><br><span class="line"><span class="string">    &lt;ul&gt;</span></span><br><span class="line"><span class="string">      &lt;li *ngFor=&quot;let change of changeLog&quot;&gt;&#123;&#123;change&#125;&#125;&lt;/li&gt;</span></span><br><span class="line"><span class="string">    &lt;/ul&gt;</span></span><br><span class="line"><span class="string">  `</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">VersionChildComponent</span> <span class="title">implements</span> <span class="title">OnChanges</span> </span>&#123;</span><br><span class="line">  @Input() major: number;</span><br><span class="line">  @Input() minor: number;</span><br><span class="line">  changeLog: string[] = [];</span><br><span class="line"></span><br><span class="line">  ngOnChanges(changes: &#123;[propKey: string]: SimpleChange&#125;) &#123;</span><br><span class="line">    <span class="keyword">let</span> log: string[] = [];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> propName <span class="keyword">in</span> changes) &#123;</span><br><span class="line">      <span class="keyword">let</span> changedProp = changes[propName];</span><br><span class="line">      <span class="keyword">let</span> to = <span class="built_in">JSON</span>.stringify(changedProp.currentValue);</span><br><span class="line">      <span class="keyword">if</span> (changedProp.isFirstChange()) &#123;</span><br><span class="line">        log.push(<span class="string">`Initial value of <span class="subst">$&#123;propName&#125;</span> set to <span class="subst">$&#123;to&#125;</span>`</span>);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="keyword">from</span> = <span class="built_in">JSON</span>.stringify(changedProp.previousValue);</span><br><span class="line">        log.push(<span class="string">`<span class="subst">$&#123;propName&#125;</span> changed from <span class="subst">$&#123;<span class="keyword">from</span>&#125;</span> to <span class="subst">$&#123;to&#125;</span>`</span>);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">this</span>.changeLog.push(log.join(<span class="string">&#x27;, &#x27;</span>));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>parent</strong><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line">@Component(&#123;</span><br><span class="line">  selector: <span class="string">&#x27;app-version-parent&#x27;</span>,</span><br><span class="line">  template: <span class="string">`</span></span><br><span class="line"><span class="string">    &lt;h2&gt;Source code version&lt;/h2&gt;</span></span><br><span class="line"><span class="string">    &lt;button (click)=&quot;newMinor()&quot;&gt;New minor version&lt;/button&gt;</span></span><br><span class="line"><span class="string">    &lt;button (click)=&quot;newMajor()&quot;&gt;New major version&lt;/button&gt;</span></span><br><span class="line"><span class="string">    &lt;app-version-child [major]=&quot;major&quot; [minor]=&quot;minor&quot;&gt;&lt;/app-version-child&gt;</span></span><br><span class="line"><span class="string">  `</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">VersionParentComponent</span> </span>&#123;</span><br><span class="line">  major = <span class="number">1</span>;</span><br><span class="line">  minor = <span class="number">23</span>;</span><br><span class="line"></span><br><span class="line">  newMinor() &#123;</span><br><span class="line">    <span class="built_in">this</span>.minor++;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  newMajor() &#123;</span><br><span class="line">    <span class="built_in">this</span>.major++;</span><br><span class="line">    <span class="built_in">this</span>.minor = <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+ngOnChanges是当数据绑定输入属性的值发生变化时而调用，我们父组件通过点击触发minor和major数值的变化，从而使子组件@Input接收的两个变量发生变化而调用ngOnChanges()函数。在子组件中 <strong>for (let propName in changes) {}</strong> 会被TSLint检测为异常，可以使用 <strong>for (const propName of Object.keys(changes)) {}</strong> 来代替。</li>
+</ul>
+<hr>
+<h2 id="父组件监听子组件的事件"><a href="#父组件监听子组件的事件" class="headerlink" title="父组件监听子组件的事件"></a>父组件监听子组件的事件</h2><p><strong>child.component.html</strong></p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot; background-color: aqua; width: 50%;height: 50px; padding-top: 10px;&quot;</span>&gt;</span></span><br><span class="line">  child：</span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">nz-input</span> #<span class="attr">childInput</span> /&gt;</span></span><br><span class="line">  <span class="comment">&lt;!--子组件定义一个按钮，用来发射要传递的数据--&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;childSend(childInput.value)&quot;</span>&gt;</span>child<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><strong>child.component.ts</strong></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppChildComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 用 EventEmitter 和 output 装饰器配合使用 &lt;string&gt;指定类型变量</span></span><br><span class="line">  @Output() childInput = <span class="keyword">new</span> EventEmitter&lt;string&gt;();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">constructor</span>() &#123;&#125;</span><br><span class="line"></span><br><span class="line">  ngOnInit(): <span class="keyword">void</span> &#123;&#125;</span><br><span class="line">  <span class="comment">// 子组件广播发射数据</span></span><br><span class="line">  childSend(value: string) &#123;</span><br><span class="line">    <span class="built_in">this</span>.childInput.emit(value);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>parent.component.html</strong></p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;border: darkred 1px solid; width: 50%;height: 50px; text-align: center;padding-top: 10px;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span>&gt;</span>parent：<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">nz-input</span> [<span class="attr">placeholder</span>]=<span class="string">&quot;placeholder&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot; text-align: center; &quot;</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--用（子组件内output的参数名）=&quot;父组件接收事件函数&quot; 来实现接收数据--&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">app-app-child</span> (<span class="attr">childInput</span>)=<span class="string">&quot;receive($event)&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">app-app-child</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><strong>parent.component.ts</strong></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppParentComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>() &#123;&#125;</span><br><span class="line">  </span><br><span class="line">  placeholder = <span class="string">&#x27;&#x27;</span>;	<span class="comment">// 父组件要显示的内容</span></span><br><span class="line">  ngOnInit(): <span class="keyword">void</span> &#123;&#125;</span><br><span class="line">  <span class="comment">//接收事件</span></span><br><span class="line">  receive(value: string) &#123;</span><br><span class="line">    <span class="built_in">this</span>.placeholder = value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>效果图</strong><br><img data-src="https://img-blog.csdnimg.cn/20200922143416805.png#pic_center" alt="效果"></p>
+<p>在子组件内使用@output装饰器和EventEmitter来装饰要传给父组件的参数及类型，通过子组件的点击事件触发广播发射数据，而父组件只需要定义接收数据事件即可。</p>
+<hr>
+<h2 id="父组件与子组件通过本地变量互动"><a href="#父组件与子组件通过本地变量互动" class="headerlink" title="父组件与子组件通过本地变量互动"></a>父组件与子组件通过本地变量互动</h2><p><strong>父组件不能使用数据绑定来读取子组件的属性或调用子组件的方法。但可以在父组件模板里，新建一个本地变量来代表子组件，然后利用这个变量来读取子组件的属性和调用子组件的方法</strong></p>
+<p><strong>child.component.html</strong></p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!--简单的一个输入框--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot; background-color: aqua; width: 50%;height: 50px; padding-top: 10px;&quot;</span>&gt;</span></span><br><span class="line">  child：</span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">nz-input</span> [<span class="attr">placeholder</span>]=<span class="string">&quot;childValue&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>child.componetn.ts</strong></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppChildComponent</span> </span>&#123;</span><br><span class="line">  childValue = <span class="string">&#x27;123&#x27;</span>;	<span class="comment">// 输入框显示的值</span></span><br><span class="line">  <span class="comment">// 变更显示</span></span><br><span class="line">  changeValue() &#123;</span><br><span class="line">    <span class="built_in">this</span>.childValue = <span class="string">&#x27;456&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>parent.component.html</strong></p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;border: darkred 1px solid; width: 50%;height: 50px; text-align: center;padding-top: 10px;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span>&gt;</span>parent：<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">nz-input</span> [<span class="attr">placeholder</span>]=<span class="string">&quot;child.childValue&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;child.changeValue()&quot;</span>&gt;</span>change<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot; text-align: center; &quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">app-app-child</span> #<span class="attr">child</span>&gt;</span><span class="tag">&lt;/<span class="name">app-app-child</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>效果图</strong></p>
+<ul>
+<li>点击按钮前：<br><img data-src="https://img-blog.csdnimg.cn/2020092216402164.png#pic_center" alt="在这里插入图片描述"></li>
+<li>点击按钮后：<img data-src="https://img-blog.csdnimg.cn/20200922164108482.png#pic_center" alt="在这里插入图片描述"><br>由此可以看出，父组件只需要给子组件命名（#Name）即可用Name来调用子组件内的变量以及方法</li>
+</ul>
+<hr>
+<h2 id="父组件调用-ViewChild"><a href="#父组件调用-ViewChild" class="headerlink" title="父组件调用@ViewChild()"></a>父组件调用@ViewChild()</h2><blockquote>
+<p>本地变量方法是个简单便利的方法，但是它也有局限性，<strong>因为父组件-子组件的连接必须全部在父组件的模板中进行。父组件本身的代码对子组件没有访问权</strong>。如果<strong>父组件的类需要读取子组件的属性值或调用子组件的方法，就不能使用本地变量方法。</strong><br>当父组件类需要这种访问时，可以把子组件作为 ViewChild，注入到父组件里面。</p>
+</blockquote>
+<p><strong>child.component.html</strong></p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot; background-color: aqua; width: 50%;height: 50px; padding-top: 10px;&quot;</span>&gt;</span></span><br><span class="line">  child：</span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">nz-input</span> [<span class="attr">placeholder</span>]=<span class="string">&quot;childValue&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>child.component.ts</strong></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppChildComponent</span> </span>&#123;</span><br><span class="line">  @Output() childSend = <span class="keyword">new</span> EventEmitter&lt;string&gt;();</span><br><span class="line">  childValue = <span class="string">&#x27;123&#x27;</span>;</span><br><span class="line"></span><br><span class="line">  changeValue(value: any) &#123;</span><br><span class="line">    value = <span class="string">&#x27;456&#x27;</span>;</span><br><span class="line">    <span class="built_in">this</span>.childSend.emit(value);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>parent.component.html</strong></p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;border: darkred 1px solid; width: 50%;height: 50px; text-align: center;padding-top: 10px;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span>&gt;</span>parent：<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">nz-input</span> [<span class="attr">placeholder</span>]=<span class="string">&quot;placeholder&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;parentChangeValue()&quot;</span>&gt;</span>change<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot; text-align: center; &quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">app-app-child</span> (<span class="attr">childSend</span>)=<span class="string">&quot;childSend($event)&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">app-app-child</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>parent.component.ts</strong></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppParentComponent</span> </span>&#123;</span><br><span class="line">  @ViewChild(AppChildComponent) private child: AppChildComponent;</span><br><span class="line">  placeholder = <span class="string">&#x27;123&#x27;</span>;</span><br><span class="line"></span><br><span class="line">  parentChangeValue() &#123;</span><br><span class="line">    <span class="built_in">this</span>.child.changeValue(<span class="built_in">this</span>.placeholder);</span><br><span class="line">  &#125;</span><br><span class="line">  childSend(value: string) &#123;</span><br><span class="line">    <span class="built_in">this</span>.placeholder = value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>效果图</strong></p>
+<ul>
+<li>点击前<img data-src="https://img-blog.csdnimg.cn/20200922171452735.png#pic_center" alt="在这里插入图片描述"></li>
+<li>点击后<img data-src="https://img-blog.csdnimg.cn/20200922171512697.png#pic_center" alt="在这里插入图片描述"></li>
+</ul>
+<p><strong>在这里，父组件直接将整个子组件注入，这样父组件类就能访问子组件的变量与类，当父组件点击change时，会调用父组件的parentChangeValue()函数，从而调用子组件的changeValue()函数，将参数变更，然后通过子组件将改变后的值发射出去，以便于父组件能够接到改变后的值，所以会在子组件上定义一个监听。</strong></p>
+<hr>
+<h2 id="父组件和子组件通过服务来通讯"><a href="#父组件和子组件通过服务来通讯" class="headerlink" title="父组件和子组件通过服务来通讯"></a>父组件和子组件通过服务来通讯</h2><blockquote>
+<p>观察者（Observer）模式是一个软件设计模式，它有一个对象，称之为主体 Subject，负责维护一个依赖项（称之为观察者 Observer）的列表，并且在状态变化时自动通知它们。 该模式和发布/订阅模式非常相似（但不完全一样）。</p>
+</blockquote>
+<blockquote>
+<p>可观察对象是声明式的 —— 也就是说，虽然你定义了一个用于发布值的函数，但是在有消费者订阅它之前，这个函数并不会实际执行。 订阅之后，当这个函数执行完或取消订阅时，订阅者就会收到通知。</p>
+</blockquote>
+<blockquote>
+<p>可观察对象可以发送多个任意类型的值 —— 字面量、消息、事件。无论这些值是同步发送的还是异步发送的，接收这些值的 API 都是一样的。 由于准备（setup）和清场（teardown）的逻辑都是由可观察对象自己处理的，因此你的应用代码只管订阅并消费这些值就可以了，做完之后，取消订阅。无论这个流是击键流、HTTP 响应流还是定时器，对这些值进行监听和停止监听的接口都是一样的。</p>
+</blockquote>
+<blockquote>
+<p>一句话形容： <strong>观察者只是具有三个回调的对象，用于处理Observable提供的每种类型的通知。</strong></p>
+</blockquote>
+<p>作为发布者，你创建一个 Observable 的实例，其中定义了一个订阅者（subscriber）函数。 当有消费者调用 subscribe() 方法时，这个函数就会执行。 订阅者函数用于定义“如何获取或生成那些要发布的值或消息”。</p>
+<p>要执行所创建的可观察对象，并开始从中接收通知，你就要调用它的 subscribe() 方法，并传入一个观察者（observer）。 这是一个 JavaScript 对象，它定义了你收到的这些消息的处理器（handler）。 subscribe() 调用会返回一个 Subscription 对象，该对象具有一个 unsubscribe() 方法。 当调用该方法时，你就会停止接收通知。</p>
+<p><strong>parent.service</strong></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ParentService</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 数据源 next(发射数据)</span></span><br><span class="line">  private parentToChildSource = <span class="keyword">new</span> Subject&lt;string&gt;();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 数据流 subscribe(取得数据)，在组件中需要订阅</span></span><br><span class="line">  parentToChild$ = <span class="built_in">this</span>.parentToChildSource.asObservable();</span><br><span class="line"></span><br><span class="line">  parentToChild(parentDataItem: string) &#123;</span><br><span class="line">    <span class="built_in">this</span>.parentToChildSource.next(parentDataItem);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>parent.component.html</strong></p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;emissionDataToChild()&quot;</span>&gt;</span>发射数据给子组件<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> *<span class="attr">ngFor</span>=<span class="string">&quot;let data of dataFromChild&quot;</span>&gt;</span>&#123;&#123;data&#125;&#125;<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">fieldset 元素可将表单内的相关元素分组。</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">&lt;fieldset&gt; 标签将表单内容的一部分打包，生成一组相关表单的字段。</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">当一组表单元素放到 &lt;fieldset&gt; 标签内时，浏览器会以特殊方式来显示它们，它们可能有特殊的边界、3D 效果，或者甚至可创建一个子表单来处理这些元素。</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">&lt;fieldset&gt; 标签没有必需的或唯一的属性。</span></span><br><span class="line"><span class="comment">--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">fieldset</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">legend</span>&gt;</span>子组件部分：<span class="tag">&lt;/<span class="name">legend</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">app-app-child</span>&gt;</span><span class="tag">&lt;/<span class="name">app-app-child</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">fieldset</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>parent.component.ts</strong></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppParentComponent</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 父组件数据</span></span><br><span class="line">  parentData = [<span class="string">&#x27;来自父组件数据a&#x27;</span>, <span class="string">&#x27;来自父组件数据b&#x27;</span>, <span class="string">&#x27;来自父组件数据c&#x27;</span>];</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 存储来自子组件数据</span></span><br><span class="line">  dataFromChild = [];</span><br><span class="line">  nextData = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">constructor</span>(private parentService: ParentService) &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 发射数据到子组件</span></span><br><span class="line">  emissionDataToChild() &#123;</span><br><span class="line">    <span class="keyword">const</span> toChildData = <span class="built_in">this</span>.parentData[<span class="built_in">this</span>.nextData++];</span><br><span class="line">    <span class="built_in">this</span>.parentService.parentToChild(toChildData);</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">this</span>.nextData &gt;= <span class="built_in">this</span>.parentData.length) &#123;</span><br><span class="line">      <span class="built_in">this</span>.nextData = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>child.component.html</strong></p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> *<span class="attr">ngFor</span>=<span class="string">&quot;let data of dataFromParent&quot;</span>&gt;</span>&#123;&#123;data&#125;&#125;<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>child.component.ts</strong></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppChildComponent</span> <span class="title">implements</span> <span class="title">OnDestroy</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 存储来自父组件数据</span></span><br><span class="line">  dataFromParent = [];</span><br><span class="line">  subscription: Subscription;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">constructor</span>(private parentService: ParentService) &#123;</span><br><span class="line">    <span class="built_in">this</span>.subscription = parentService.parentToChild$.subscribe(<span class="function">(<span class="params">data</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">this</span>.dataFromParent.push(<span class="string">`<span class="subst">$&#123;data&#125;</span>`</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 生命周期销毁钩子</span></span><br><span class="line">  public ngOnDestroy() &#123;</span><br><span class="line">    <span class="built_in">this</span>.subscription.unsubscribe();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>效果图</strong></p>
+<ul>
+<li>连续点击按钮四次<br><img data-src="https://img-blog.csdnimg.cn/20200923102757411.png#pic_center" alt="在这里插入图片描述"></li>
+</ul>
+<hr>
+<blockquote>
+<p>Subject是一个特殊的Observable,它允许将值多播给多个观察者。而且 每个 Subject 都是 Observable 每个 Subject 都是观察者 也就是说Subject可以被订阅,同时也具有观察者的三种方法:next,error,component<br>解释来源：<a href="https://www.jianshu.com/p/6a5bff3d38fd">简书</a></p>
+</blockquote>
+<blockquote>
+<p>试着理解一下：</p>
+<blockquote>
+<p>1、当我点击父组件页面的按钮时，他就会触发父组件的emissionDataToChild()函数<br>2、父组件会根据nextData的数值来确定parentData下标所代表的值<br>3、接着，父组件会调用服务中的parentToChild(),并将要传给子组件的值作为参数传送过去<br>4、服务内，已经声明Subject &lt; string &gt; 类型的parentToChildSource，会通过next()将值多播给已注册监听该 Subject 的观察者们<br>5、其实这个时候传值就已经初步实现了，那只要规划好观察者就可以了，我们在让child作为观察者，<strong>那么就需要观察一个可被观察的对象</strong>，于是乎，我们在服务中将Subject类型的parentToChildSource通过asObservable()为一个可被观察的对象。<br>6、在child中声明一个观察者（subscription: Subscription），让他来subscribe parentToChild$的变化，并把变化的值返回，再通过定义好的数组push进去就好了。</p>
+</blockquote>
+</blockquote>
+<p><strong>Q</strong>: Subscription是什么?<br><strong>A</strong>:当subscribe一个observable的时候, 返回的就是一个subscription. 它是一个一次性对象(disposable), 它有一个非常重要的方法 ubsubscribe(), 它没有参数, 它会dispose掉subscription所持有的资源, 或者叫取消observable的执行.如果没有取消，就有可能会造成内存泄漏，这也是为什么要在生命周期销毁的时候调用取消订阅。</p>
+<blockquote>
+<p>服务通讯的理解是借助于<a href="">https://blog.csdn.net/Handsome_fan/article/details/84202758</a>，对博主表示感谢。</p>
+</blockquote>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>感觉父子组件传值比较常用的应该是装饰器和服务，模块化开发的话就会有一些非父子组件的传值，先留个坑，肝一肝再补上。</p>
 ]]></content>
+      <categories>
+        <category>Angular2</category>
+      </categories>
+      <tags>
+        <tag>Angular2</tag>
+      </tags>
   </entry>
   <entry>
-    <title>The frist Blog of testing</title>
+    <title>【Angular2】--创建动态表单</title>
+    <url>/posts/b1f108b2/</url>
+    <content><![CDATA[<h1 id="动态增加表单"><a href="#动态增加表单" class="headerlink" title="动态增加表单"></a>动态增加表单</h1><p>这个问题的环境是基于<strong>Angular10</strong>和NG-ZROOR，nz中的动态表单案例是有个触发机制的——点击按钮，而有时候页面的显示是不需要手动触发的。先从后台取回数据，在进行数据的渲染。取回的数据大多是数组，所以案例中的就不可取了，在借鉴了<a href="https://blog.csdn.net/wjyyhhxit/article/details/91973582">wujiayucn</a> 的《响应式表单-FormArray &amp; 动态的增加、减少FormArray中的元素 &amp; 给FormArray 赋值》一文，我也终于对这个问题有了一丝理解，先做个笔记</p>
+<a id="more"></a>
+<h1 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h1><p><strong>在进入某一个页面的时候，通过获取到的数组，动态渲染到表单中，再提交表单的时候同样以数组形式提交出去</strong></p>
+<hr style=" border:solid; width:100px; height:1px;" color=#000000 size=1">
+
+<h1 id="实现："><a href="#实现：" class="headerlink" title="实现："></a>实现：</h1><h2 id="page-component-html"><a href="#page-component-html" class="headerlink" title="page.component.html"></a>page.component.html</h2><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">nz-card</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">form</span> <span class="attr">nz-form</span> [<span class="attr">formGroup</span>]=<span class="string">&quot;validateForm&quot;</span> (<span class="attr">ngSubmit</span>)=<span class="string">&quot;submitForm()&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> *<span class="attr">ngFor</span>=<span class="string">&quot;let control of tempList; let i = index&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">nz-form-control</span> [<span class="attr">formGroupName</span>]=<span class="string">&quot;control.id&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">nz-row</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">div</span> <span class="attr">nz-col</span> <span class="attr">nzSpan</span>=<span class="string">&quot;8&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">nz-form-label</span> <span class="attr">nzSpan</span>=<span class="string">&quot;8&quot;</span> <span class="attr">nzRequired</span>&gt;</span>name<span class="tag">&lt;/<span class="name">nz-form-label</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">nz-form-control</span> <span class="attr">nzSpan</span>=<span class="string">&quot;16&quot;</span> [<span class="attr">nzErrorTip</span>]=<span class="string">&quot;nameError&quot;</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">input</span> <span class="attr">nz-input</span> <span class="attr">formControlName</span>=<span class="string">&quot;name&quot;</span> /&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">ng-template</span> #<span class="attr">nameError</span> <span class="attr">let-name</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">ng-container</span> *<span class="attr">ngIf</span>=<span class="string">&quot;name.hasError(&#x27;required&#x27;)&quot;</span>&gt;</span></span><br><span class="line">                  name必填</span><br><span class="line">                <span class="tag">&lt;/<span class="name">ng-container</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;/<span class="name">ng-template</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">nz-form-control</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">          <span class="tag">&lt;<span class="name">div</span> <span class="attr">nz-col</span> <span class="attr">nzSpan</span>=<span class="string">&quot;8&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">nz-form-label</span> <span class="attr">nzSpan</span>=<span class="string">&quot;8&quot;</span> <span class="attr">nzRequired</span>&gt;</span>age<span class="tag">&lt;/<span class="name">nz-form-label</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">nz-form-control</span> <span class="attr">nzSpan</span>=<span class="string">&quot;16&quot;</span> [<span class="attr">nzErrorTip</span>]=<span class="string">&quot;ageError&quot;</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">input</span> <span class="attr">nz-input</span> <span class="attr">formControlName</span>=<span class="string">&quot;age&quot;</span> /&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">ng-template</span> #<span class="attr">ageError</span> <span class="attr">let-age</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">ng-container</span> *<span class="attr">ngIf</span>=<span class="string">&quot;age.hasError(&#x27;required&#x27;)&quot;</span>&gt;</span></span><br><span class="line">                  age必填</span><br><span class="line">                <span class="tag">&lt;/<span class="name">ng-container</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;/<span class="name">ng-template</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">nz-form-control</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">          <span class="tag">&lt;<span class="name">div</span> <span class="attr">nz-col</span> <span class="attr">nzSpan</span>=<span class="string">&quot;8&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">nz-form-label</span> <span class="attr">nzSpan</span>=<span class="string">&quot;8&quot;</span> <span class="attr">nzRequired</span>&gt;</span>phone<span class="tag">&lt;/<span class="name">nz-form-label</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">nz-form-control</span> <span class="attr">nzSpan</span>=<span class="string">&quot;16&quot;</span> [<span class="attr">nzErrorTip</span>]=<span class="string">&quot;phoneError&quot;</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">input</span> <span class="attr">nz-input</span> <span class="attr">formControlName</span>=<span class="string">&quot;phoneNumber&quot;</span> /&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">ng-template</span> #<span class="attr">phoneError</span> <span class="attr">let-phone</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">ng-container</span> *<span class="attr">ngIf</span>=<span class="string">&quot;phone.hasError(&#x27;required&#x27;)&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">ng-container</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;/<span class="name">ng-template</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">nz-form-control</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">nz-form-control</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">br</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">nz-form-item</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">nz-form-control</span> [<span class="attr">nzSm</span>]=<span class="string">&quot;&#123; span: 20, offset: 4 &#125;&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">button</span> <span class="attr">nz-button</span> <span class="attr">nzType</span>=<span class="string">&quot;primary&quot;</span>&gt;</span>Submit<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">nz-form-control</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">nz-form-item</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">nz-card</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img data-src="https://img-blog.csdnimg.cn/20200921132039535.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1bmdvb2RsdWNrNjY2,size_16,color_FFFFFF,t_70#pic_center" alt="布局"></p>
+<hr style=" border:solid; width:100px; height:1px;" color=#000000 size=1">
+
+<h2 id="page-component-ts"><a href="#page-component-ts" class="headerlink" title="page.component.ts"></a>page.component.ts</h2><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">constructor</span>(private fb: FormBuilder) &#123;&#125; </span><br><span class="line"> validateForm: FormGroup;</span><br><span class="line"> <span class="comment">// 模拟数据：获取到的数组</span></span><br><span class="line"> tempList = [</span><br><span class="line">   &#123; <span class="attr">id</span>: <span class="number">1</span>, <span class="attr">name</span>: <span class="string">&#x27;张三&#x27;</span>, <span class="attr">age</span>: <span class="number">20</span>, <span class="attr">phoneNumber</span>: <span class="number">15855855858</span> &#125;,</span><br><span class="line">   &#123; <span class="attr">id</span>: <span class="number">2</span>, <span class="attr">name</span>: <span class="string">&#x27;李四&#x27;</span>, <span class="attr">age</span>: <span class="number">21</span>, <span class="attr">phoneNumber</span>: <span class="number">15855855858</span> &#125;,</span><br><span class="line">   &#123; <span class="attr">id</span>: <span class="number">3</span>, <span class="attr">name</span>: <span class="string">&#x27;王二&#x27;</span>, <span class="attr">age</span>: <span class="number">22</span>, <span class="attr">phoneNumber</span>: <span class="number">15855855858</span> &#125;,</span><br><span class="line"> ];</span><br><span class="line"> ngOnInit(): <span class="keyword">void</span> &#123;</span><br><span class="line">   <span class="built_in">this</span>.validateForm = <span class="built_in">this</span>.fb.group(&#123;&#125;);</span><br><span class="line">   <span class="built_in">this</span>.addField();</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> addField(): <span class="keyword">void</span> &#123;</span><br><span class="line"> <span class="comment">//  根据获取到的数组循环创建controller</span></span><br><span class="line">   <span class="built_in">this</span>.tempList.forEach(<span class="function">(<span class="params">item: any</span>) =&gt;</span> &#123;</span><br><span class="line">     <span class="built_in">this</span>.validateForm.addControl(</span><br><span class="line">       item.id,</span><br><span class="line">       <span class="keyword">new</span> FormGroup(</span><br><span class="line">         &#123;</span><br><span class="line">           name: <span class="keyword">new</span> FormControl([item.name], [Validators.required]),</span><br><span class="line">           age: <span class="keyword">new</span> FormControl(item.age, Validators.required),</span><br><span class="line">           phoneNumber: <span class="keyword">new</span> FormControl(item.phoneNumber, [Validators.required]),</span><br><span class="line">         &#125;,</span><br><span class="line">         [Validators.required],</span><br><span class="line">       ),</span><br><span class="line">     );</span><br><span class="line">   &#125;);</span><br><span class="line"> &#125;</span><br><span class="line"><span class="comment">// 提交表单</span></span><br><span class="line"> submitForm(): <span class="keyword">void</span> &#123;</span><br><span class="line"> <span class="comment">// 表单脏校验</span></span><br><span class="line">   <span class="keyword">for</span> (<span class="keyword">const</span> i <span class="keyword">in</span> <span class="built_in">this</span>.validateForm.controls) &#123;</span><br><span class="line">     <span class="built_in">this</span>.validateForm.controls[i].markAsDirty();</span><br><span class="line">     <span class="built_in">this</span>.validateForm.controls[i].updateValueAndValidity();</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">const</span> tempValue = []; </span><br><span class="line">   <span class="keyword">for</span> (<span class="keyword">let</span> index = <span class="number">1</span>; index &lt;= <span class="built_in">this</span>.tempList.length; index++) &#123;</span><br><span class="line">     <span class="keyword">const</span> element = <span class="built_in">this</span>.validateForm.value[index];</span><br><span class="line">     tempValue.push(element);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="built_in">console</span>.log(<span class="string">&#x27;tempValue&#x27;</span>, tempValue);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="tempValue"><a href="#tempValue" class="headerlink" title="tempValue:"></a>tempValue:</h2><p><img data-src="https://img-blog.csdnimg.cn/20200921132757308.png#pic_center" alt="submit"></p>
+<h2 id="validateForm-value"><a href="#validateForm-value" class="headerlink" title="validateForm.value:"></a>validateForm.value:</h2><p><img data-src="https://img-blog.csdnimg.cn/20200921133540611.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1bmdvb2RsdWNrNjY2,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<h1 id="残留问题："><a href="#残留问题：" class="headerlink" title="残留问题："></a>残留问题：</h1><p>在创建controller的时候可以添加同步验证，但是同步验证的结果却是有问题的,虽然能显示要输出的提示，但是存在 ’提示不出现‘ 以及 ’颜色有问题‘，也就是说，创建controller的参数还是不合理的，希望看到的大佬们能够提点一下我，深表感谢！！</p>
+<blockquote>
+<p>new FormGroup(<br>          {<br>            name: new FormControl([item.name], [Validators.required]),<br>            age: new FormControl(item.age, Validators.required),<br>            phoneNumber: new FormControl(item.phoneNumber, [Validators.required]),<br>          },<br>          [Validators.required],<br>        ),<br><img data-src="https://img-blog.csdnimg.cn/2020092113295940.png#pic_center" alt="error"></p>
+</blockquote>
+<hr style=" border:solid; width:100px; height:1px;" color=#000000 size=1">
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>动态增加表单时，或许可以以表单分组来循环创建，创建之后的结构会更加分明，之后再解构就能达到想要的结构。该写法或许还有不合理或者未发现的安全隐患，请看到的大佬们给一些反馈和指导，在此感激不尽！</p>
+<hr>
+<h1 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h1><p>关于提示问题，已经解决，在每个 <strong>&lt; nz-form-control &gt; &lt;/ nz-form-control &gt;</strong> 外层添加一层 <strong>&lt; nz-form-item&gt;</strong> 即可。<br><img data-src="https://img-blog.csdnimg.cn/20200921173132159.png#pic_center" alt="实现"></p>
+<blockquote>
+<p>表单项用于区分表单中不同的区域，包含表单域和表单标签(可选)。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Angular2</category>
+      </categories>
+      <tags>
+        <tag>Angular2</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【Angular2】--快速搭建Alain框架</title>
+    <url>/posts/b758f302/</url>
+    <content><![CDATA[<h1 id="Angular搭建模板框架"><a href="#Angular搭建模板框架" class="headerlink" title="Angular搭建模板框架"></a>Angular搭建模板框架</h1><p><strong>前言</strong>：网络不好，可以使用国内淘宝镜像。本模板的脚手架使用<a href="https://ng-alain.com/docs/getting-started/zh"><strong>Ng Alain</strong></a>，本地环境需要安装 node 和 git。技术栈基于 <a href="https://www.tslang.cn/docs/handbook/typescript-in-5-minutes.html">Typescript</a>、<a href="https://angular.cn/docs">Angular</a>、<a href="https://antv.vision/zh#products">g2</a>、@delon 和 <a href="https://ng.ant.design/docs/introduce/zh">ng-zorro-antd</a>。</p>
+<a id="more"></a>
+<ul>
+<li>配置国内镜像：<blockquote>
+<p>打开终端，输入 <strong>npm config get registry</strong> 来查看当前地址</p>
+</blockquote>
+</li>
+</ul>
+<blockquote>
+<p>更改地址：<strong>npm config set registry <a href="https://registry.npm.taobao.org/">https://registry.npm.taobao.org</a></strong></p>
+</blockquote>
+<h2 id="安装（推荐CLI）"><a href="#安装（推荐CLI）" class="headerlink" title="安装（推荐CLI）"></a>安装（推荐CLI）</h2><blockquote>
+<p>创建项目：<strong>ng new my-project –style less –routing</strong><br>打开项目：<strong>cd my-project</strong><br>安装脚手架：<strong>ng add ng-alain</strong><br>运行：<strong>npm start</strong></p>
+</blockquote>
+<h2 id="在安装脚手架时的提示"><a href="#在安装脚手架时的提示" class="headerlink" title="在安装脚手架时的提示"></a>在安装脚手架时的提示<img data-src="https://img-blog.csdnimg.cn/20200910104713684.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1bmdvb2RsdWNrNjY2,size_16,color_FFFFFF,t_70#pic_center" alt="alain"></h2><ul>
+<li><strong>你愿意在谷歌的隐私政策下，与谷歌Angular团队分享这个项目的 匿名使用数据吗？</strong></li>
+<li><strong>选择你想使用的默认语言</strong></li>
+<li><strong>是否添加hmr插件</strong></li>
+<li><strong>是否添加代码样式插件</strong></li>
+<li><strong>是否添加动态模具（sf组件）插件</strong></li>
+<li><strong>是否添加模拟数据插件</strong></li>
+<li><strong>是否添加国际化插件</strong></li>
+</ul>
+<h2 id="安装完成"><a href="#安装完成" class="headerlink" title="安装完成"></a>安装完成<img data-src="https://img-blog.csdnimg.cn/20200910110008127.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1bmdvb2RsdWNrNjY2,size_16,color_FFFFFF,t_70#pic_center" alt="alain"></h2><ul>
+<li>账号输入<strong>admin</strong>/<strong>user</strong></li>
+<li>密码输入<strong>ng-alain.com</strong><br><img data-src="https://img-blog.csdnimg.cn/2020091011024826.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1bmdvb2RsdWNrNjY2,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></li>
+</ul>
+<h2 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h2><blockquote>
+<p><strong>NG-ALAIN 是一个标准的 Angular CLI 构建的项目，并提供了涵盖中后台开发的各类功能和坑位，下面是整个项目的目录结构。</strong></p>
+</blockquote>
+<p><img data-src="https://img-blog.csdnimg.cn/20200910111307628.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1bmdvb2RsdWNrNjY2,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+]]></content>
+      <categories>
+        <category>Angular2</category>
+      </categories>
+      <tags>
+        <tag>Angular2</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>js实现倒计时</title>
+    <url>/posts/16107/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>突然想到倒计时的案例，就试着写了一个，但是当时的思路是直接获取dom并输出，没有实现可复用性，而且耦合度很大，在搜索了几篇文章后，发现有个大佬写的确实很好，就摘抄一下，以加强理解。</p>
+<hr>
+<h1 id="效果图"><a href="#效果图" class="headerlink" title="效果图"></a>效果图<img data-src="https://img-blog.csdnimg.cn/20200914152141555.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1bmdvb2RsdWNrNjY2,size_16,color_FFFFFF,t_70#pic_center" alt="效果图"></h1><p>这里可以实现以你选择的时间作为倒计时结束的时间</p>
+<hr>
+<h1 id="countDown-html"><a href="#countDown-html" class="headerlink" title="countDown.html"></a>countDown.html</h1><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html lang=<span class="string">&quot;en&quot;</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;meta charset=<span class="string">&quot;UTF-8&quot;</span>&gt;</span><br><span class="line">    &lt;meta name=<span class="string">&quot;viewport&quot;</span> content=<span class="string">&quot;width=device-width, initial-scale=1.0&quot;</span>&gt;</span><br><span class="line">    &lt;title&gt;countDown&lt;/title&gt;</span><br><span class="line">    &lt;link href=<span class="string">&quot;countdown.css&quot;</span> rel=<span class="string">&quot;stylesheet&quot;</span> type=<span class="string">&quot;text/css&quot;</span> /&gt;</span><br><span class="line">    &lt;/link&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line"></span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;div id=<span class="string">&quot;select&quot;</span>&gt;</span><br><span class="line">        &lt;input type=<span class="string">&quot;datetime-local&quot;</span> id=<span class="string">&quot;selectTime&quot;</span> /&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">    &lt;div id=<span class="string">&quot;clear&quot;</span>&gt;&lt;/div&gt;</span><br><span class="line">    &lt;div id=<span class="string">&quot;box&quot;</span>&gt;</span><br><span class="line">        &lt;h1&gt;倒计时&lt;/h1&gt;</span><br><span class="line">        &lt;div id=<span class="string">&quot;time&quot;</span>&gt;</span><br><span class="line">            &lt;strong&gt;&lt;span id=<span class="string">&quot;day&quot;</span>&gt;**天&lt;/span&gt;&lt;/strong&gt;</span><br><span class="line">            &lt;strong&gt;&lt;span id=<span class="string">&quot;hour&quot;</span>&gt;**时&lt;/span&gt;&lt;/strong&gt;</span><br><span class="line">            &lt;strong&gt;&lt;span id=<span class="string">&quot;minute&quot;</span>&gt;**分&lt;/span&gt;&lt;/strong&gt;</span><br><span class="line">            &lt;strong&gt;&lt;span id=<span class="string">&quot;second&quot;</span>&gt;**秒&lt;/span&gt;&lt;/strong&gt;</span><br><span class="line">        &lt;/div&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">    &lt;script src=<span class="string">&quot;countdown.js&quot;</span>&gt;&lt;/script&gt;</span><br><span class="line">    &lt;script&gt;</span><br><span class="line">        var tempContent = my$(&#x27;time&#x27;);</span><br><span class="line">        var daySpan = my$(&#x27;day&#x27;);</span><br><span class="line">        var hourSpan = my$(&#x27;hour&#x27;);</span><br><span class="line">        var minuteSpan = my$(&#x27;minute&#x27;);</span><br><span class="line">        var secondSpan = my$(&#x27;second&#x27;);</span><br><span class="line">        TimeRow();</span><br><span class="line">        setInterval(TimeRow, <span class="number">1000</span>)</span><br><span class="line">	<span class="comment">// 这里是主要的显示回调</span></span><br><span class="line">        <span class="function">function <span class="title">TimeRow</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            var selectTime = my$(&#x27;selectTime&#x27;).value;</span><br><span class="line">            var end = <span class="keyword">new</span> Date(selectTime);</span><br><span class="line">            var start = <span class="keyword">new</span> Date();</span><br><span class="line">            var time = getInterval(start, end);</span><br><span class="line">            var tempDisable = end &gt; start;</span><br><span class="line">            <span class="keyword">if</span> (tempDisable) &#123;</span><br><span class="line">                setInnerText(daySpan, time.day + <span class="string">&#x27;天&#x27;</span>);</span><br><span class="line">                setInnerText(hourSpan, time.hour + <span class="string">&#x27;时&#x27;</span>);</span><br><span class="line">                setInnerText(minuteSpan, time.minute + <span class="string">&#x27;分&#x27;</span>);</span><br><span class="line">                setInnerText(secondSpan, time.second + <span class="string">&#x27;秒&#x27;</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                setInnerText(daySpan, <span class="string">&#x27;已&#x27;</span>);</span><br><span class="line">                setInnerText(hourSpan, <span class="string">&#x27;超&#x27;</span>);</span><br><span class="line">                setInnerText(minuteSpan, <span class="string">&#x27;时&#x27;</span>);</span><br><span class="line">                setInnerText(secondSpan, <span class="string">&#x27;!&#x27;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &lt;/script&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line"></span><br><span class="line">&lt;/html&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="countDown-css"><a href="#countDown-css" class="headerlink" title="countDown.css"></a>countDown.css</h1><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">body &#123;</span><br><span class="line">    background-color: #<span class="number">2</span>a3852;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#select &#123;</span></span><br><span class="line">    margin-top: <span class="number">8</span>px;</span><br><span class="line">    <span class="keyword">float</span>: right;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#box &#123;</span></span><br><span class="line">    display: flex;</span><br><span class="line">    justify-content: center;</span><br><span class="line">    align-items: center;</span><br><span class="line">    flex-direction: column;</span><br><span class="line">    margin-top: <span class="number">300</span>px;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#box h1 &#123;</span></span><br><span class="line">    letter-spacing: <span class="number">3</span>px;</span><br><span class="line">    font-weight: <span class="number">500</span>;</span><br><span class="line">    color: <span class="meta">#fff;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#time &#123;</span></span><br><span class="line">    display: flex;</span><br><span class="line">    flex-direction: row;</span><br><span class="line">    line-height: <span class="number">50</span>px;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#time span &#123;</span></span><br><span class="line">    font-size: <span class="number">20</span>px;</span><br><span class="line">    color: <span class="meta">#fff;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#time strong &#123;</span></span><br><span class="line">    text-align: center;</span><br><span class="line">    margin-left: <span class="number">20</span>px;</span><br><span class="line">    background-color: #<span class="number">3f</span>5174;</span><br><span class="line">    border-radius: <span class="number">10</span>px;</span><br><span class="line">    width: <span class="number">70</span>px;</span><br><span class="line">    height: <span class="number">50</span>px;</span><br><span class="line">    display: block;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#clear &#123;</span></span><br><span class="line">    clear: both;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="countDown-js"><a href="#countDown-js" class="headerlink" title="countDown.js"></a>countDown.js</h1><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">function my$(id) &#123;</span><br><span class="line">    <span class="keyword">return</span> document.getElementById(id);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 处理innerText和textContent的兼容性问题</span></span><br><span class="line"><span class="comment">// 设置标签之间的内容</span></span><br><span class="line"><span class="function">function <span class="title">setInnerText</span><span class="params">(element, content)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 判断当前浏览器是否支持 innerText</span></span><br><span class="line">    if (typeof element.innerText === &#x27;string&#x27;) &#123;</span><br><span class="line">        element.innerText = content;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        element.textContent = content;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function">function <span class="title">getInterval</span><span class="params">(start, end)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 两个日期对象，相差的毫秒数</span></span><br><span class="line">    var interval = end - start;</span><br><span class="line">    <span class="comment">// 求 相差的天数/小时数/分钟数/秒数</span></span><br><span class="line">    var day, hour, minute, second;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 两个日期对象，相差的秒数</span></span><br><span class="line">    <span class="comment">// interval = interval / 1000;</span></span><br><span class="line">    interval /= <span class="number">1000</span>;</span><br><span class="line">	<span class="comment">// 计算时间采取四舍五入</span></span><br><span class="line">    day = Math.round(interval / <span class="number">60</span> / <span class="number">60</span> / <span class="number">24</span>);</span><br><span class="line">    hour = Math.round(interval / <span class="number">60</span> / <span class="number">60</span> % <span class="number">24</span>);</span><br><span class="line">    minute = Math.round(interval / <span class="number">60</span> % <span class="number">60</span>);</span><br><span class="line">    second = Math.round(interval % <span class="number">60</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        day: day,</span><br><span class="line">        hour: hour,</span><br><span class="line">        minute: minute,</span><br><span class="line">        second: second</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>关于innerText和textContent的兼容性问题<blockquote>
+<p><strong>IE支持innerHTML与innerText</strong><br><strong>FireFox支持innerHTML与textContent</strong><br>所以在IE与FireFox中使用显示内容时 必须得先判断浏览器 然后决定使用innerText还是textContent**</p>
+</blockquote>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1>这个大佬的代码很清晰，没有不必要的耦合，而不是单单的获取DOM树后在渲染，减少不必要的麻烦，对于时间起始和结束的判断以及超时显示是我后加的，想用三元表达式代替的，结果没写好，希望能够补充一下，不然赋值的那几行很是啰嗦。<blockquote>
+<p>文章引用：<a href="https://segmentfault.com/a/1190000024433108">https://segmentfault.com/a/1190000024433108</a></p>
+</blockquote>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Example</category>
+      </categories>
+      <tags>
+        <tag>Example</tag>
+        <tag>js</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>超简洁后台系统静态登陆页面</title>
     <url>/posts/44873/</url>
     <content><![CDATA[<h1 id="静态登录页面"><a href="#静态登录页面" class="headerlink" title="静态登录页面"></a>静态登录页面</h1><p>今天在网上看到一个后台登录页面，很简洁，看着也很舒服，就试着模仿做一下这个小案例(这个案例的水平很低，只是我复习css的第一步)。没有验证码和js逻辑，就只是简单地一个页面渲染。我感觉一般的后台管理登录页面应该不会注重样式(可能觉得没必要，只要能用就行)。这个小案例也算是我重拾css的第一步，样式用惯了框架，真要写的时候才发现都给忘了。。。</p>
-<h2 id="效果图"><a href="#效果图" class="headerlink" title="效果图"></a>效果图<img data-src="https://img-blog.csdnimg.cn/2020091320435635.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1bmdvb2RsdWNrNjY2,size_16,color_FFFFFF,t_70#pic_center" alt="效果图"></h2><hr>
+<h2 id=""><a href="#" class="headerlink" title=""></a><img data-src="https://img-blog.csdnimg.cn/2020091320435635.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1bmdvb2RsdWNrNjY2,size_16,color_FFFFFF,t_70#pic_center"></h2><a id="more"></a>
+
+<hr>
 <h2 id="login-html"><a href="#login-html" class="headerlink" title="login.html"></a>login.html</h2><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html lang=<span class="string">&quot;en&quot;</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;head&gt;</span><br><span class="line">  &lt;mate charset=<span class="string">&quot;UTF-8&quot;</span>&gt;</span><br><span class="line">    &lt;title&gt;login&lt;/title&gt;</span><br><span class="line">    &lt;link rel=<span class="string">&quot;stylesheet&quot;</span> type=<span class="string">&quot;text/css&quot;</span> href=<span class="string">&quot;login.css&quot;</span>&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line"></span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;login-user&quot;</span>&gt;</span><br><span class="line">    &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;login-btn&quot;</span>&gt;</span><br><span class="line">      &lt;h1&gt;login&lt;/h1&gt;</span><br><span class="line">      &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;user&quot;</span>&gt;</span><br><span class="line">        &lt;input type=<span class="string">&quot;text&quot;</span> placeholder=<span class="string">&quot;userName&quot;</span>&gt;</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">      &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;pass&quot;</span>&gt;</span><br><span class="line">        &lt;input type=<span class="string">&quot;text&quot;</span> placeholder=<span class="string">&quot;passWord&quot;</span>&gt;</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">      &lt;button&gt;登录&lt;/button&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line"></span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
 
 <hr>
@@ -285,10 +321,92 @@
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>对于像我这样的菜鸟来说，再回首从学校出来后带出来的css知识，已经远远地跟不上同时期的同学了，目前对于系统的前端知识理解还未入门，但是我相信，只要肯学，我就会有进步，加油！！！</p>
 ]]></content>
       <categories>
+        <category>Example</category>
+      </categories>
+      <tags>
+        <tag>Example</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Theme Allocation Of Next</title>
+    <url>/posts/54882/</url>
+    <content><![CDATA[<p> <img data-src="http://theme-next.iissnan.com/assets/img/NextSchemes3.png"><br>有关hexo建站的教程，官网和一些博客介绍的很详细，基本上创建一个静态的博客是没有问题的，但是在使用主题后对主题进行一些列的配置就很麻烦，具体体现在各个文件的关联和繁杂的第三方。</p>
+<a id="more"></a>
+
+<h1 id="hexo"><a href="#hexo" class="headerlink" title="hexo"></a>hexo</h1><p> <a href="https://hexo.io/zh-cn/docs/">hexo官网</a></p>
+<blockquote>
+<p>Hexo是一款基于Node.js的静态博客框架，依赖少易于安装使用，可以方便的生成静态网页托管在GitHub和Coding上，是搭建博客的首选框架。大家可以进入hexo官网进行详细查看，因为Hexo的创建者是台湾人，对中文的支持很友好，可以选择中文进行查看。</p>
+</blockquote>
+<h2 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h2><ul>
+<li>Hexo搭建步骤</li>
+<li>安装Git</li>
+<li>安装Node.js</li>
+<li>安装Hexo</li>
+<li>GitHub创建个人仓库</li>
+<li>生成SSH添加到GitHub</li>
+<li>将hexo部署到GitHub</li>
+<li>设置个人域名</li>
+<li>发布文章</li>
+</ul>
+<p>具体的安装教程可以参考<a href="https://blog.csdn.net/sinat_37781304/article/details/82729029">hexo史上最全搭建教程</a></p>
+<p>建站过程中有两点短板，先记录下来，后续跟进学习：</p>
+<ul>
+<li>git的相关语法</li>
+<li>css</li>
+</ul>
+<p><strong>其中有关百度收录方面，使用CNAME是最方便的，直接使用域名解析到百度提供的地址即可</strong></p>
+<p><strong>收录推送也只是简单的选择sitemap</strong></p>
+<p>next内置了valine的评论系统，而valine使用cleanCloud的数据库，这就造成了一个数据方面的问题————cleanCloud每天要休眠一段时间，这就使评论系统有时候会出现显示不了的问题，所以果断舍弃，大道至简。</p>
+<h2 id="next主题优化"><a href="#next主题优化" class="headerlink" title="next主题优化"></a>next主题优化</h2><ul>
+<li>参考<blockquote>
+<p><a href="http://theme-next.iissnan.com/theme-settings.html">nexT官方文档</a><br><a href="https://zhuanlan.zhihu.com/p/30836436">next-主题优化</a></p>
+</blockquote>
+</li>
+</ul>
+<p>再参考相关文章之后，主要添加了几个实用的优化：</p>
+<ul>
+<li>搜索</li>
+<li>文本字数和时间提醒</li>
+<li>点击效果</li>
+<li>卡片样式调整</li>
+</ul>
+<p>还有一个就是使用了<a href="https://lucksun.work/404.html">腾讯公益的404页面</a></p>
+]]></content>
+      <categories>
         <category>Testing</category>
       </categories>
       <tags>
-        <tag>-testing</tag>
+        <tag>Testing</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【Angular2】--配置开发环境</title>
+    <url>/posts/9c4101a6/</url>
+    <content><![CDATA[<h1 id="Angular简介"><a href="#Angular简介" class="headerlink" title="Angular简介"></a>Angular简介</h1><p>先贴一下<a href="https://angular.cn/guide/setup-local">官网</a>：<a href="https://angular.cn/guide/setup-local">https://angular.cn/guide/setup-local</a></p>
+<p>首先Angular是一个mvc框架，它致力于<strong>mvc代码解耦</strong>，采用<strong>model</strong>,<strong>controller</strong>以及<strong>view</strong>方式去组织代码，Angular会将一个HTML页面分成若干个模块，每个模块都可以自己的scope，service以及directive，各个模块之间也可以进行通信，但是整体上结构是比较清晰的，就是说其代码组织方式是模块化的。</p>
+<a id="more"></a>
+<p>angular的view可能仅仅是一个框架，对view的dom操作或者时间监听都是在directive中实现的，而且一般情况下很少自己直接去写Dom操作代码，只要你监听model。model发生变化后view也会发生变化。<br><strong>Angular特点：</strong></p>
+<ul>
+<li><strong>数据的双向绑定</strong>——这可能是其最激动人心的特性吧，view层的数据和model层的数据是双向绑定的，其中之一发生更改，另一方会随之变化，这不用你写任何代码！</li>
+<li><strong>代码模块化</strong>——每个模块的代码独立拥有自己的作用域，model，controller等。</li>
+<li><strong>依赖注入</strong>——将这种后端语言的设计模式赋予前端代码，这意味着前端的代码可以提高重用性和灵活性，未来的模式可能将大量操作放在客户端，服务端只提供数据来源和其他客户端无法完成的操作；</li>
+<li><strong>测试驱动开发</strong>——angularjs一开始就以此为目标，使用angular开发的应用可以很容易地进行单元测试和端对端测试，这解决了传统的js代码难以测试和维护的缺陷<h1 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h1><ul>
+<li><strong>Node.js</strong><br><a href="https://nodejs.org/zh-cn/">官网</a><img data-src="https://img-blog.csdnimg.cn/20200909145958723.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1bmdvb2RsdWNrNjY2,size_16,color_FFFFFF,t_70#pic_center" alt="node.js官网"><br>安装完成后在<strong>终端</strong>中输入<strong>node -v</strong>，返回<strong>版本号(例：v12.16.2)</strong> 即表示安装成功。</li>
+<li><strong>npm包管理器</strong><br>Angular、Angular CLI 以及 Angular 应用都要依赖 npm 包来实现很多特性和功能。<strong>npm会随着node的安装而一起安装</strong>，在<strong>终端</strong>中输入<strong>npm -v</strong>返回<strong>版本号(6.14.4)</strong></li>
+<li><strong>cnpm国内淘宝镜像(可选)</strong><br>终端输入：npm  install -g  cnpm –registry=<a href="https://registry.npm.taobao.org/">https://registry.npm.taobao.org</a></li>
+<li><strong>Angular CLI（angular脚手架）</strong><br>终端输入：npm  install  -g  @angular/cli  或<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cnpm  install  -g  @angular/cli  （推荐使用cnpm）<br>验证安装是否成功：ng  v（出现以下即成功）<img data-src="https://img-blog.csdnimg.cn/20200909151606264.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1bmdvb2RsdWNrNjY2,size_16,color_FFFFFF,t_70#pic_center" alt="cli安装成功"></li>
+<li><strong>编辑工具</strong><br>选择自己习惯的就好，个人比较喜欢<a href="https://code.visualstudio.com/">VS Code</a>，原因有几点：</li>
+</ul>
+</li>
+</ul>
+<p><strong>界面现代化，主题多样，可定制性高</strong><br>VSCode 不但可以换主题还可以换图标包，甚至自定义界面的 CSS 和 js。<br><strong>免费</strong><br>你看 MDN 以及很多前端教程都推荐使用 VSCode，一方面也降低了学习难度不是。扩展生态强大。我仍然记得我第一次使用 gitlens 的惊艳，居然每一行代码都给我标出来了是最近一次是谁修改的，什么时候修改的，简直是甩锅利器。虽然我前面说了有相当一部分VSCode 的插件质量确实不行，但是优秀实用有趣的插件也不少。<br><strong>开源而且官方维护积极</strong><br>因为是个开源项目，不但可以通过其本身的代码设计学到很多东西，还可以清楚的看到当前的开发进度，每次更新都能给我惊喜。</p>
+]]></content>
+      <categories>
+        <category>Angular2</category>
+      </categories>
+      <tags>
+        <tag>Angular2</tag>
+        <tag>环境配置</tag>
       </tags>
   </entry>
 </search>

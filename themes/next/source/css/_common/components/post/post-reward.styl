@@ -41,19 +41,4 @@
     text-align: center;
   }
 
-  if (hexo-config('reward_settings.animation')) {
-    > div:hover p {
-      animation: roll .1s infinite linear;
-    }
-
-    @keyframes roll {
-      from {
-        transform: rotateZ(30deg);
-      }
-
-      to {
-        transform: rotateZ(-30deg);
-      }
-    }
-  }
 }
